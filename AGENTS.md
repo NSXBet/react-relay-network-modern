@@ -86,25 +86,17 @@ release branch). Run `bun run check` locally before pushing to mirror the gate.
 
 ## Learnings / gotchas
 
-Hard-won context from the TypeScript modernization — read before touching tooling or CI:
+Guardrails to avoid repeating real failures:
 
-- **GitHub Actions allowlist (org policy).** NSXBet sets `allowed_actions: selected` — only GitHub-owned
-  actions plus `nsxbet/*` and `nsx-actions/*` are permitted. Any other `uses:` source makes the run fail
-  with `startup_failure` ("workflow file issue") before any job starts. Use the `nsx-actions` mirrors named
-  `<owner>_<repo>` (e.g. `nsx-actions/jdx_mise-action`, `nsx-actions/oven-sh_setup-bun`). **Mirror tags can
-  differ from upstream** — the mise mirror has no `v2` (starts at `v3`), so we pin `@v4`.
-- **npm publish secret** is `NPM_PUBLIC_TOKEN` (mapped to the `NPM_TOKEN` env that semantic-release reads).
-- **`tsc --noEmit` covers shipped source only.** `__tests__`/`__mocks__` are excluded (Vitest runs them), so
-  tests may use loose typing. Flow-style casts `(x: any)` were rewritten to `(x as any)` during migration.
-- **`tsdown.config.ts` needs the `unrun` devDep** to load the TS config file; without it the build errors at
-  config-load time. `exports: true` (auto-managing package.json) was disabled — the `exports` map is
-  hand-written so the build doesn't mutate `package.json` and the `types` conditions stay correct.
-- **`fetch-mock` is intentionally pinned at `^9`.** v12 is a breaking API rewrite; upgrading would mean
-  rewriting all test mocks and snapshots for zero contract benefit.
-- **Vitest snapshot keys use ` > ` separators** (Jest used spaces). The Jest→Vitest migration regenerated
-  keys but snapshot *values* are byte-identical. Update intentionally with `vitest run -u`.
-- **Packaging is validated with `publint` and `@arethetypeswrong/cli --pack`** (both clean). `size-limit`
-  ignores `relay-runtime` (external peer); tree-shaking check: whole lib ≈ 6.3 kB vs a single middleware
-  ≈ 1.7–2 kB brotli.
-- **`legacyBatchMiddleware` was removed** (Relay Classic request-id batcher). `batchMiddleware` is the only
-  batcher; don't reintroduce the legacy one.
+- **GitHub Actions allowlist.** The org sets `allowed_actions: selected` — only GitHub-owned actions plus
+  `nsxbet/*` and `nsx-actions/*` are allowed; anything else fails the run with `startup_failure` before any
+  job starts. Use the `nsx-actions` mirrors named `<owner>_<repo>` (e.g. `nsx-actions/jdx_mise-action`,
+  `nsx-actions/oven-sh_setup-bun`) and check their tags — they can lag upstream (the mise mirror has no
+  `v2`, so we pin `@v4`).
+- **Don't re-enable tsdown `exports: true`** — it rewrites `package.json` on every build and drops the
+  per-format `types` conditions. The `exports` map is hand-written; keep it so. (`tsdown.config.ts` also
+  needs the `unrun` devDep to load.)
+- **Keep `fetch-mock` at `^9`.** v12 is a breaking API rewrite that would force rewriting every test mock
+  and snapshot for no contract gain.
+- **Don't reintroduce `legacyBatchMiddleware`** (the removed Relay Classic request-id batcher);
+  `batchMiddleware` is the only batcher.
