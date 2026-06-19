@@ -1,3 +1,4 @@
+import type { RequestParameters } from 'relay-runtime';
 import type RelayRequest from './RelayRequest';
 import type RelayRequestBatch from './RelayRequestBatch';
 import type RelayResponse from './RelayResponse';
@@ -14,7 +15,7 @@ export interface MiddlewareRaw {
 
 export interface MiddlewareSync {
   execute: (
-    operation: ConcreteBatch,
+    operation: RequestParameters,
     variables: Variables,
     cacheConfig: CacheConfig,
     uploadables?: UploadableMap | null
@@ -60,29 +61,12 @@ export interface RRNLResponseObject {
   payload: GraphQLResponse | null | undefined;
 }
 
-export type RNLExecuteFunction = (
-  operation: ConcreteBatch,
-  variables: Variables,
-  cacheConfig: CacheConfig,
-  uploadables?: UploadableMap | null
-) => RelayObservable<QueryPayload>;
-
 // ///////////////////////////
 // Relay Modern re-exports
 // ///////////////////////////
 
 export interface Variables {
   [name: string]: any;
-}
-export interface ConcreteBatch {
-  kind: 'Batch';
-  fragment: any;
-  id: string | null;
-  metadata: { [key: string]: unknown };
-  name: string;
-  query: any;
-  text: string | null;
-  operationKind: string;
 }
 export interface CacheConfig {
   force?: boolean | null;
@@ -122,20 +106,20 @@ export interface RelayObservable<T> {
 // however Flow cannot yet distinguish it from T.
 export type ObservableFromValue<T> = RelayObservable<T> | Promise<T> | T;
 export type FetchFunction = (
-  operation: ConcreteBatch,
+  operation: RequestParameters,
   variables: Variables,
   cacheConfig: CacheConfig,
   uploadables?: UploadableMap | null
 ) => ObservableFromValue<QueryPayload>;
 export type FetchHookFunction = (
-  operation: ConcreteBatch,
+  operation: RequestParameters,
   variables: Variables,
   cacheConfig: CacheConfig,
   uploadables?: UploadableMap | null
 ) => void | ObservableFromValue<QueryPayload>;
 // See SubscribeFunction type declaration in relay-runtime/network/RelayNetworkTypes.js
 export type SubscribeFunction = (
-  operation: ConcreteBatch,
+  operation: RequestParameters,
   variables: Variables,
   cacheConfig: CacheConfig,
   observer: any

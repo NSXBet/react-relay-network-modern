@@ -1,4 +1,5 @@
-import type { ConcreteBatch, Variables, CacheConfig, UploadableMap, FetchOpts } from './definition';
+import type { RequestParameters } from 'relay-runtime';
+import type { Variables, CacheConfig, UploadableMap, FetchOpts } from './definition';
 import RRNLError from './RRNLError';
 
 function getFormDataInterface(): typeof FormData | null | undefined {
@@ -10,14 +11,14 @@ export default class RelayRequest {
   id: string;
   fetchOpts: FetchOpts;
 
-  operation: ConcreteBatch;
+  operation: RequestParameters;
   variables: Variables;
   cacheConfig: CacheConfig;
   uploadables?: UploadableMap | null;
   controller: AbortController | null;
 
   constructor(
-    operation: ConcreteBatch,
+    operation: RequestParameters,
     variables: Variables,
     cacheConfig: CacheConfig,
     uploadables?: UploadableMap | null

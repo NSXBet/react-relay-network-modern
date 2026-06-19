@@ -1,4 +1,4 @@
-import { Network } from 'relay-runtime';
+import { Network, type ExecuteFunction } from 'relay-runtime';
 import RelayRequest from './RelayRequest';
 import fetchWithMiddleware from './fetchWithMiddleware';
 import type {
@@ -8,7 +8,6 @@ import type {
   FetchFunction,
   FetchHookFunction,
   SubscribeFunction,
-  RNLExecuteFunction,
 } from './definition';
 
 export interface RelayNetworkLayerOpts {
@@ -20,8 +19,8 @@ export interface RelayNetworkLayerOpts {
 export default class RelayNetworkLayer {
   _middlewares: Middleware[];
   _rawMiddlewares: MiddlewareRaw[];
-  _middlewaresSync: RNLExecuteFunction[];
-  execute: RNLExecuteFunction;
+  _middlewaresSync: MiddlewareSync['execute'][];
+  execute: ExecuteFunction;
   executeWithEvents: any;
   readonly fetchFn: FetchFunction;
   readonly subscribeFn?: SubscribeFunction;
@@ -98,7 +97,7 @@ export default class RelayNetworkLayer {
     };
 
     const network = Network.create(this.fetchFn as any, this.subscribeFn as any);
-    this.execute = network.execute as any;
+    this.execute = network.execute;
     this.executeWithEvents = (network as any).executeWithEvents;
   }
 }
