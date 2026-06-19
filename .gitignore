@@ -41,5 +41,9 @@ node_modules
 # Build output
 /dist
 
+# Verdaccio (local publish testing)
+verdaccio/storage/
+verdaccio/htpasswd
+
 coverage
 .nyc_output

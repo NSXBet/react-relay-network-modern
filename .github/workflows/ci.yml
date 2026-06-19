@@ -9,42 +9,112 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  lint-and-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Install runtime (node + bun via mise)
-        uses: nsx-actions/jdx_mise-action@v4
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
       - name: Lint (oxlint)
         run: bun run lint
       - name: Typecheck (tsc)
         run: bun run typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
       - name: Test (vitest + coverage)
         run: bun run coverage
+
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
       - name: Build (tsdown)
         run: bun run build
 
+  size:
+    name: Bundle size
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Build (tsdown)
+        run: bun run build
+      - name: Size limit (bundle size + tree-shaking budgets)
+        run: bun run size
+
+  test-publish:
+    name: Test Publish
+    runs-on: ubuntu-24.04
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Build (tsdown)
+        run: bun run build
+      - name: Start Verdaccio
+        run: |
+          bun install -g verdaccio
+          mkdir -p verdaccio/storage
+          verdaccio --config verdaccio/config.yaml &
+          sleep 5
+
+          # Setup npm to use Verdaccio with basic auth
+          AUTH_TOKEN=$(echo -n 'test:test' | base64)
+          echo "registry=http://localhost:4873/" > ~/.npmrc
+          echo "//localhost:4873/:_auth=$AUTH_TOKEN" >> ~/.npmrc
+          echo "//localhost:4873/:always-auth=true" >> ~/.npmrc
+      - name: Publish to Verdaccio
+        run: |
+          npm pkg set version=0.0.0-test.${{ github.run_id }}
+          npm pkg delete publishConfig
+          npm publish --registry http://localhost:4873
+          git checkout package.json
+      - name: Verify install from Verdaccio
+        run: |
+          mkdir -p /tmp/test-install && cd /tmp/test-install
+          npm init -y
+          npm install relay-runtime @nsxbet/react-relay-network-modern@0.0.0-test.${{ github.run_id }} --registry http://localhost:4873
+          # CJS resolution + public value export must work
+          node -e "const m = require('@nsxbet/react-relay-network-modern'); if (!m.RelayNetworkLayer) throw new Error('missing RelayNetworkLayer export'); console.log('OK: package installs and exports RelayNetworkLayer')"
+
   publish:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/alpha' || github.ref == 'refs/heads/beta'
-    needs: [test]
-    runs-on: ubuntu-latest
+    name: Publish
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/alpha' || github.ref == 'refs/heads/beta')
+    needs: [lint-and-typecheck, test, build, size, test-publish]
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       issues: write
       pull-requests: write
       id-token: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Install runtime (node + bun via mise)
-        uses: nsx-actions/jdx_mise-action@v4
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup
+        uses: ./.github/actions/setup
       - name: Build (tsdown)
         run: bun run build
       - name: Semantic Release (publish to npm)
         run: bunx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_PUBLIC_TOKEN }}
