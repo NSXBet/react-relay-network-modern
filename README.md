@@ -294,7 +294,7 @@ server.listen(port, () => {
 });
 ```
 
-[More complex example](https://github.com/NSXBet/react-relay-network-modern/blob/master/examples/dataLoaderPerBatchRequest.js) of how you can use a single [DataLoader](https://github.com/facebook/dataloader) for all (batched) queries within a one HTTP-request.
+[More complex example](https://github.com/NSXBet/react-relay-network-modern/blob/main/examples/dataLoaderPerBatchRequest.js) of how you can use a single [DataLoader](https://github.com/facebook/dataloader) for all (batched) queries within a one HTTP-request.
 
 If you are on Koa@2, [koa-graphql-batch](https://github.com/mattecapu/koa-graphql-batch) provides the same functionality as `graphqlBatchHTTPWrapper` (see its docs for usage example).
 
@@ -321,4 +321,4 @@ Also if you made great middleware and want share it within this module, please f
 
 ## License
 
-[MIT](https://github.com/NSXBet/react-relay-network-modern/blob/master/LICENSE.md)
+[MIT](https://github.com/NSXBet/react-relay-network-modern/blob/main/LICENSE.md)

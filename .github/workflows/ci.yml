@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master, main, alpha, beta]
+    branches: [main, alpha, beta]
   pull_request:
 
 permissions:
@@ -27,7 +27,7 @@ jobs:
         run: bun run build
 
   publish:
-    if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/alpha' || github.ref == 'refs/heads/beta'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/alpha' || github.ref == 'refs/heads/beta'
     needs: [test]
     runs-on: ubuntu-latest
     permissions:
