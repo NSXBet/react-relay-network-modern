@@ -1,0 +1,17 @@
+name: Setup
+description: Setup mise + bun and install dependencies
+
+runs:
+  using: composite
+  steps:
+    - name: Setup mise
+      uses: nsx-actions/jdx_mise-action@v4
+
+    - name: Setup bun
+      uses: nsx-actions/oven-sh_setup-bun@v2
+      with:
+        bun-version-file: .tool-versions
+
+    - name: Install dependencies
+      shell: bash
+      run: bun install --frozen-lockfile

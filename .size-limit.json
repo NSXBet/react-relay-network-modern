@@ -1,0 +1,23 @@
+[
+  {
+    "name": "whole library (import *)",
+    "path": "dist/index.js",
+    "import": "*",
+    "ignore": ["relay-runtime"],
+    "limit": "8 kB"
+  },
+  {
+    "name": "RelayNetworkLayer + urlMiddleware (tree-shaken)",
+    "path": "dist/index.js",
+    "import": "{ RelayNetworkLayer, urlMiddleware }",
+    "ignore": ["relay-runtime"],
+    "limit": "3 kB"
+  },
+  {
+    "name": "batchMiddleware only (tree-shaken)",
+    "path": "dist/index.js",
+    "import": "{ batchMiddleware }",
+    "ignore": ["relay-runtime"],
+    "limit": "3 kB"
+  }
+]

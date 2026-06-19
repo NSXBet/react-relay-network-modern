@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`middlewares/perf > measure request time for request 1`] = `
+RelayRequest {
+  "cacheConfig": {},
+  "controller": AbortController {
+    Symbol(SameObject caches): {
+      "signal": AbortSignal {},
+    },
+  },
+  "fetchOpts": {
+    "body": "{"id":"MyRequest","query":"","variables":{}}",
+    "headers": {
+      "Accept": "*/*",
+      "Content-Type": "application/json",
+    },
+    "method": "POST",
+    "signal": AbortSignal {},
+  },
+  "id": "MyRequest",
+  "operation": {
+    "id": "MyRequest",
+    "operationKind": "query",
+    "text": "",
+  },
+  "uploadables": undefined,
+  "variables": {},
+}
+`;

@@ -1,71 +1,40 @@
 # ReactRelayNetworkModern (for Relay Modern)
 
-[![npm](https://img.shields.io/npm/v/react-relay-network-modern.svg)](https://www.npmjs.com/package/react-relay-network-modern)
-[![trends](https://img.shields.io/npm/dt/react-relay-network-modern.svg)](http://www.npmtrends.com/react-relay-network-modern)
-[![Travis](https://img.shields.io/travis/relay-tools/react-relay-network-modern.svg?maxAge=2592000)](https://travis-ci.org/relay-tools/react-relay-network-modern)
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![npm](https://img.shields.io/npm/v/@nsxbet/react-relay-network-modern.svg)](https://www.npmjs.com/package/@nsxbet/react-relay-network-modern)
+[![CI](https://github.com/NSXBet/react-relay-network-modern/actions/workflows/ci.yml/badge.svg)](https://github.com/NSXBet/react-relay-network-modern/actions/workflows/ci.yml)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
-![FlowType compatible](https://img.shields.io/badge/flowtype-compatible-brightgreen.svg)
+![TypeScript](https://img.shields.io/badge/types-TypeScript-blue.svg)
+
+> `@nsxbet/react-relay-network-modern` is a fork of [`react-relay-network-modern`](https://github.com/relay-tools/react-relay-network-modern) by Pavel Chertorogov (@nodkz), modernized to TypeScript. We are not the owners of the original package.
 
 The `ReactRelayNetworkModern` is a [Network Layer for Relay Modern](https://relay.dev/docs/guides/network-layer/)
 with various middlewares which can manipulate requests/responses on the fly (change auth headers, request url or perform some fallback if request fails), batch several relay request by timeout into one http request, cache queries and server-side rendering.
-
-Network Layer for Relay Classic can be found [here](https://github.com/relay-tools/react-relay-network-layer).
-
-Migration guide from v1 to v2 can be found [here](https://github.com/relay-tools/react-relay-network-modern/releases/tag/v2.0.0).
 
 `ReactRelayNetworkModern` can be used in browser, react-native or node server for rendering. Under the hood this module uses global `fetch` method. So if your client is too old, please import explicitly proper polyfill to your code (eg. `whatwg-fetch`, `node-fetch` or `fetch-everywhere`).
 
 ## Install
 
 ```bash
-yarn add react-relay-network-modern
-OR
-npm install react-relay-network-modern --save
+bun add @nsxbet/react-relay-network-modern
+# or
+npm install @nsxbet/react-relay-network-modern
 ```
 
-### What if `regeneratorRuntime is not defined`?
+### Builds
 
-<img width="493" alt="screen shot 2018-02-20 at 20 07 45" src="https://user-images.githubusercontent.com/1946920/36428334-da402a6e-1679-11e8-9897-7e730ab3123e.png">
-
-I don't want to bundle regenerator-runtime with the library - it's a largish dependency and there's a good chance that the user is already including code which depends on it (eg. via `babel-polyfill`). If we bundle it they'll get a duplicate copy and that's bad.
-
-So if you got `regeneratorRuntime is not defined` you should do the following:
+This package ships ES modules and CommonJS builds with TypeScript declarations, resolved
+automatically through the package `exports` field. No `core-js`/`regenerator-runtime` polyfills
+are bundled — it targets modern runtimes and relies on the global `fetch`.
 
 ```js
-import 'regenerator-runtime/runtime';
-import { RelayNetworkLayer } from 'react-relay-network-modern';
-```
-
-### What if Webpack errors with `Error: Cannot find module 'core-js/modules/es6.*'`?
-
-`core-js` is not an explicit dependency as it adds [30kb for client bundles](https://bundlephobia.com/result?p=core-js@2.6.9).
-
-If this error occurs you can do one of the following:
-
-- Explicitly install core-js v2. E.g.
-  - `yarn add core-js@2.6.11
-- Try referencing one of the non default imports:
-  - `import { RelayNetworkLayer } from 'react-relay-network-modern/es';`
-
-### Different builds
-
-This library contains different builds for any purposes:
-
-```js
-// Default import for using in any browser
-// last 5 versions, ie 9, defaults
-import { RelayNetworkLayer } from 'react-relay-network-modern';
-
-// Source code without Flowtype declarations
-import { RelayNetworkLayer } from 'react-relay-network-modern/es';
+import { RelayNetworkLayer } from '@nsxbet/react-relay-network-modern';
 ```
 
 ## Middlewares
 
 ### Built-in middlewares
 
-- **your custom inline middleware** - [see example](https://github.com/relay-tools/react-relay-network-modern#example-of-injecting-networklayer-with-middlewares-on-the-client-side) below where added `credentials` and `headers` to the `fetch` method.
+- **your custom inline middleware** - [see example](https://github.com/NSXBet/react-relay-network-modern#example-of-injecting-networklayer-with-middlewares-on-the-client-side) below where added `credentials` and `headers` to the `fetch` method.
   - `next => req => { /* your modification of 'req' object */ return next(req); }`
 - **urlMiddleware** - for manipulating fetch `url` on fly via thunk.
   - `url` - string for single request. Can be Promise or function(req). (default: `/graphql`).
@@ -103,7 +72,7 @@ import { RelayNetworkLayer } from 'react-relay-network-modern/es';
   - `allowMutations` - by default retries disabled for mutations, you may allow process retries for them passing `true`. (default: `false`)
   - `allowFormData` - by default retries disabled for file Uploads, you may enable it passing `true` (default: `false`)
   - `forceRetry` - deprecated, use `beforeRetry` instead (default: `false`).
-- **batchMiddleware** - gather some period of time relay-requests and sends it as one http-request. You server must support batch request and return results in the same order they were requested. [See how to setup your server.](https://github.com/relay-tools/react-relay-network-modern#example-how-to-enable-batching)
+- **batchMiddleware** - gather some period of time relay-requests and sends it as one http-request. You server must support batch request and return results in the same order they were requested. [See how to setup your server.](https://github.com/NSXBet/react-relay-network-modern#example-how-to-enable-batching)
   - `batchUrl` - string. Url of the server endpoint for batch request execution. Can be function(requestList) or Promise. (default: `/graphql/batch`)
   - `batchTimeout` - integer in milliseconds, period of time for gathering multiple requests before sending them to the server. Will delay sending of the requests on specified in this option period of time, so be careful and keep this value small. (default: `0`)
   - `maxBatchSize` - integer representing maximum size of request to be sent in a single batch. Once a request hits the provided size in length a new batch request is ran. Actual for hardcoded limit in 100kb per request in [express-graphql](https://github.com/graphql/express-graphql/blob/master/src/parseBody.js#L112) module. (default: `102400` characters, roughly 100kb for 1-byte characters or 200kb for 2-byte characters)
@@ -112,7 +81,6 @@ import { RelayNetworkLayer } from 'react-relay-network-modern/es';
   - `headers` - Object with headers for fetch. Can be Promise or function(req).
   - `credentials` - string, setting for fetch method, eg. 'same-origin' (default: empty).
   - also you may provide `mode`, `cache`, `redirect` options for fetch method, for details see [fetch spec](https://fetch.spec.whatwg.org/#requests).
-  - alternatively, you can use _legacyBatchMiddleware_, which sends a request ID with each query and expects the GraphQL server to include the request ID with each result.
 - **loggerMiddleware** - for logging requests and responses.
   - `logger` - log function (default: `console.log.bind(console, '[RELAY-NETWORK]')`)
   - An example of req/res output in console: <img width="968" alt="screen shot 2017-11-19 at 23 05 19" src="https://user-images.githubusercontent.com/1946920/33159466-557517e0-d03d-11e7-9711-ebdfe6e789c8.png">
@@ -138,7 +106,6 @@ import {
   RelayNetworkLayer,
   urlMiddleware,
   batchMiddleware,
-  // legacyBatchMiddleware,
   loggerMiddleware,
   errorMiddleware,
   perfMiddleware,
@@ -158,11 +125,6 @@ const network = new RelayNetworkLayer(
     urlMiddleware({
       url: (req) => Promise.resolve('/graphql'),
     }),
-    // Deprecated batch middleware
-    // legacyBatchMiddleware({
-    //   batchUrl: (requestMap) => Promise.resolve('/graphql/batch'),
-    //   batchTimeout: 10,
-    // }),
     batchMiddleware({
       batchUrl: (requestList) => Promise.resolve('/graphql/batch'),
       batchTimeout: 10,
@@ -332,7 +294,7 @@ server.listen(port, () => {
 });
 ```
 
-[More complex example](https://github.com/relay-tools/react-relay-network-modern/blob/master/examples/dataLoaderPerBatchRequest.js) of how you can use a single [DataLoader](https://github.com/facebook/dataloader) for all (batched) queries within a one HTTP-request.
+[More complex example](https://github.com/NSXBet/react-relay-network-modern/blob/main/examples/dataLoaderPerBatchRequest.js) of how you can use a single [DataLoader](https://github.com/facebook/dataloader) for all (batched) queries within a one HTTP-request.
 
 If you are on Koa@2, [koa-graphql-batch](https://github.com/mattecapu/koa-graphql-batch) provides the same functionality as `graphqlBatchHTTPWrapper` (see its docs for usage example).
 
@@ -342,10 +304,6 @@ And right after server side ready to accept batch queries, you may enable batchi
 
 ```js
 const network = new RelayNetworkLayer([
-  // deprecated "legacy" batch middleware
-  // legacyBatchMiddleware({
-  //   batchUrl: '/graphql/batch', // <--- route for batch queries
-  // }),
   batchMiddleware({
     batchUrl: '/graphql/batch', // <--- route for batch queries
   }),
@@ -356,10 +314,6 @@ const network = new RelayNetworkLayer([
 
 Internally batching in `NetworkLayer` prepare list of queries `[ {query, variables}, ...]` sends it to server. And server returns list of results `[ {data}, ...]`. The server is expected to return the results in the same order as the requests.
 
-As of v4.0.0, the batch middleware utilizing request IDs in queries and corresponding results has been renamed `legacyBatchMiddleware`. The legacy middleware included a request ID with each query included in the batch and expected the server to return each result with the corresponding request ID. The new `batchMiddleware` simply expects results be returned in the same order as the batched queries.
-
-**NOTE:** `legacyBatchMiddleware` does not correctly deduplicate queries when batched because query variables may be ignored in a comparison. This means that two identical queries with _different_ variables will show the same results due to a bug ([#31](https://github.com/relay-tools/react-relay-network-modern/issues/31)). It is highly encouraged to use the new order-based `batchMiddleware`, which still deduplicates queries, but includes the variables in the comparison.
-
 ## Contribute
 
 I actively welcome pull requests with code and doc fixes.
@@ -367,4 +321,4 @@ Also if you made great middleware and want share it within this module, please f
 
 ## License
 
-[MIT](https://github.com/relay-tools/react-relay-network-modern/blob/master/LICENSE.md)
+[MIT](https://github.com/NSXBet/react-relay-network-modern/blob/main/LICENSE.md)

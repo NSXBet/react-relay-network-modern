@@ -1,0 +1,22 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["import", "typescript", "unicorn"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true
+  },
+  "ignorePatterns": ["dist", "node_modules", "examples"],
+  "rules": {
+    "no-console": "off",
+    "no-plusplus": "off",
+    "no-underscore-dangle": "off",
+    "typescript/no-explicit-any": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**", "**/__mocks__/**"],
+      "env": { "jest": true }
+    }
+  ]
+}
