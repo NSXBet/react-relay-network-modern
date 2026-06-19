@@ -38,10 +38,8 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
-# Transpiled code
-/es
-/lib
-/mjs
+# Build output
+/dist
 
 coverage
 .nyc_output
