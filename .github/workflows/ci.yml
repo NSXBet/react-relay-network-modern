@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install runtime (node + bun via mise)
-        uses: jdx/mise-action@v2
+        uses: nsx-actions/jdx_mise-action@v4
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Lint (oxlint)
@@ -38,7 +38,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install runtime (node + bun via mise)
-        uses: jdx/mise-action@v2
+        uses: nsx-actions/jdx_mise-action@v4
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Build (tsdown)
