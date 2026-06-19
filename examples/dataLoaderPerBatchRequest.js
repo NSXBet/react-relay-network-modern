@@ -8,7 +8,7 @@ Tuned for performance, to avoid creating unnecessary functions per request.
 
 import express, { Router } from 'express';
 import graphqlHTTP from 'express-graphql';
-import { graphqlBatchHTTPWrapper } from 'react-relay-network-modern';
+import { graphqlBatchHTTPWrapper } from '@nsxbet/react-relay-network-modern';
 import bodyParser from 'body-parser';
 import myGraphqlSchema from './graphqlSchema';
 import DataLoader from 'dataloader';
