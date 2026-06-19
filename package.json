@@ -43,7 +43,10 @@
     "jwt",
     "auth token"
   ],
-  "author": "Pavel Chertorogov @nodkz",
+  "author": "NSXBet",
+  "contributors": [
+    "Pavel Chertorogov <pavel.chertorogov@gmail.com> (https://github.com/nodkz)"
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/NSXBet/react-relay-network-modern/issues"
