@@ -50,7 +50,10 @@ factory (and its `Opts` type) from `src/index.ts`, and add a colocated test. Doc
 - `tsc --noEmit` typechecks the shipped source only; `__tests__`/`__mocks__` are excluded (run by Vitest).
 - Node engine: `>=18`.
 - **Conventional Commits** (semantic-release). Commit messages drive automatic versioning and publishing on
-  `main`/`alpha`/`beta`. Use `fix:`, `feat:`, `chore:`, etc. — do not hand-edit the version.
+  `main`/`alpha`/`beta`. Use `fix:`, `feat:`, `chore:`, etc. — do not hand-edit the version. Signal a
+  **major** bump with a `!` after the type (`feat!:`) or a `BREAKING CHANGE:` footer. Enforced on every
+  commit by a **lefthook** `commit-msg` hook that runs **commitlint** (`@commitlint/config-conventional`);
+  the hook installs via the `prepare` script on `bun install` (`lefthook.yml`, `commitlint.config.js`).
 - Tests are **Vitest**, run in `jsdom` with globals enabled, colocated in `__tests__/`. Snapshots are used;
   update intentionally (`vitest run -u`).
 
