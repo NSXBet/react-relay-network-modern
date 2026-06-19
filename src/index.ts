@@ -55,7 +55,6 @@ export type {
   FetchResponse,
   GraphQLResponseErrors,
   GraphQLResponse,
-  ConcreteBatch,
   CacheConfig,
   Uploadable,
   UploadableMap,
